@@ -28,13 +28,23 @@ def set_defaults():
 if __name__ == '__main__':
     set_defaults()
 
-    seconds_to_record = .5
-
-    recording = sd.rec(int(seconds_to_record * microphone_sample_rate))
+    seconds_to_record = 1
+    frames = int(seconds_to_record * microphone_sample_rate)
+    recording = sd.rec(
+        frames=frames,
+        samplerate=microphone_sample_rate,
+        channels=1,
+    )
     sd.wait()
+
+    spectrum = np.fft.rfft(recording, axis=0)
+    frequencies = np.fft.rfftfreq(len(recording), 1/microphone_sample_rate)
     plt.plot(recording)
     plt.show()
-    import pdb;pdb.set_trace
+    plt.close()
+    plt.plot(frequencies, abs(spectrum))
+    plt.show()
+    plt.close()
 
 
 #    with sd.InputStream(channels=2, callback=microphone_callback):
